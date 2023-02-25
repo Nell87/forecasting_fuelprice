@@ -68,7 +68,7 @@ def upload_s3():
         Bucket= bucket, Key=test, Filename="data/test"
     )
 
-    s3.download_file(
+    s3.upload_file(
         Bucket= bucket, Key=test, Filename="data/test"
     )
 
