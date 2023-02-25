@@ -100,6 +100,7 @@ upload_s3("gas-prices-project", concat_data)
 
 # Rename
 s3 = boto3.resource('s3')
-s3.Object('gas-prices-project','data').delete()
-s3.Object('gas-prices-project','data').copy_from(CopySource='gas-prices-project/new_data')
-s3.Object('gas-prices-project','new_data').delete()
+s3.Object('gas-prices-project','data.csv').delete()
+s3.Object('gas-prices-project','data.csv').copy_from(CopySource='gas-prices-project/new_data.csv')
+s3.Object('gas-prices-project','new_data.csv').delete()
+
