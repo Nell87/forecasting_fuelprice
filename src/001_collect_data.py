@@ -6,6 +6,7 @@ import numpy as np
 import re
 from decimal import Decimal
 from datetime import datetime, timedelta
+from io import StringIO
 import boto3
 
 # ------------------------ FUNCTIONS ------------------------ #
@@ -62,16 +63,11 @@ def oil_scraper(year, month):
 def upload_s3():
     s3 = boto3.client('s3')
     bucket = "gas-prices-project"
+    csv_buffer = StringIO()
+    test.to_csv(csv_buffer)
 
-    
-    s3.download_file(
-        Bucket= bucket, Key=test, Filename="data/test"
-    )
-
-    s3.upload_file(
-        Bucket= bucket, Key=test, Filename="data/test"
-    )
-
+    s3_resource = boto3.resource('s3')
+    s3_resource.Object(bucket, 'test.csv').put(Body=csv_buffer.getvalue())
 
     # ------------------------ WORKFLOW ------------------------ #
 test = oil_scraper(2023, 1)
