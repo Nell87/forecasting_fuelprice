@@ -65,11 +65,11 @@ def upload_s3():
 
     
     s3.download_file(
-        Bucket= bucket, Key="test.csv", Filename="data/downloaded_from_s3.csv"
+        Bucket= bucket, Key=test, Filename="data/test"
     )
 
     s3.download_file(
-        Bucket= bucket, Key="test.csv", Filename="data/downloaded_from_s3.csv"
+        Bucket= bucket, Key=test, Filename="data/test"
     )
 
 
