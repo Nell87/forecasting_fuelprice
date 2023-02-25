@@ -60,15 +60,14 @@ def oil_scraper(year, month):
 
     return df
 
-def upload_s3():
+def upload_s3(bucket, data):
     s3 = boto3.client('s3')
-    bucket = "gas-prices-project"
     csv_buffer = StringIO()
-    test.to_csv(csv_buffer)
+    data.to_csv(csv_buffer)
 
     s3_resource = boto3.resource('s3')
-    s3_resource.Object(bucket, 'test.csv').put(Body=csv_buffer.getvalue())
+    s3_resource.Object(bucket, 'data.csv').put(Body=csv_buffer.getvalue())
 
-    # ------------------------ WORKFLOW ------------------------ #
-test = oil_scraper(2023, 1)
-upload_s3()
+# ------------------------ WORKFLOW ------------------------ #
+dataset = oil_scraper(2023, 1)
+upload_s3("gas-prices-project", dataset)
