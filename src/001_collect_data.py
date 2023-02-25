@@ -93,4 +93,7 @@ dataset = oil_scraper(2023, 1)
 upload_s3("gas-prices-project", dataset)
 
 # Merge
-merge_datasets_S3()
+concat_data = merge_datasets_S3()
+
+# Upload S3
+upload_s3("gas-prices-project", concat_data)
