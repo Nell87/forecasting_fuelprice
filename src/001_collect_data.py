@@ -81,9 +81,8 @@ def merge_datasets_S3():
     first_df = pd.read_csv(first_obj['Body'])
     second_df = pd.read_csv(second_obj['Body'])
     
-    joined_df = first_df.merge(second_df, on=['ID'], how='left')
-    
-    return joined_df
+    concat_data = pd.concat([first_df, second_df]) 
+    return concat_data
     
 
 # ------------------------ WORKFLOW ------------------------ #
