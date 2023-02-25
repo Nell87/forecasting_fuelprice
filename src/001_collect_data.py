@@ -68,6 +68,30 @@ def upload_s3(bucket, new_data):
     s3_resource = boto3.resource('s3')
     s3_resource.Object(bucket, 'new_data.csv').put(Body=csv_buffer.getvalue())
 
+def merge_datasets_S3():
+    bucket = 'gas-prices-project'
+    filename_1 = 'data.csv'
+    filename_2 = 'new_data.csv'
+    
+    s3 = boto3.client('s3')
+    
+    first_obj = s3.get_object(Bucket= bucket, Key= filename_1)
+    second_obj = s3.get_object(Bucket= bucket, Key= filename_2)
+    
+    first_df = pd.read_csv(first_obj['Body'])
+    second_df = pd.read_csv(second_obj['Body'])
+    
+    joined_df = first_df.merge(second_df, on=['ID'], how='left')
+    
+    return joined_df
+    
+
 # ------------------------ WORKFLOW ------------------------ #
+# Scraper
 dataset = oil_scraper(2023, 1)
+
+# Upload S3
 upload_s3("gas-prices-project", dataset)
+
+# Merge
+merge_datasets_S3()
