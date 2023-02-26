@@ -82,7 +82,7 @@ def merge_datasets_S3():
     second_df = pd.read_csv(second_obj['Body'])
     
     concat_data = pd.concat([first_df, second_df]) 
-    concat_data = concat_data.drop_duplicates()
+    concat_data = concat_data.drop_duplicates(subset=['start_day'])
 
     return concat_data
     
