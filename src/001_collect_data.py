@@ -82,12 +82,14 @@ def merge_datasets_S3():
     second_df = pd.read_csv(second_obj['Body'])
     
     concat_data = pd.concat([first_df, second_df]) 
+    concat_data = concat_data.drop_duplicates()
+
     return concat_data
     
 
 # ------------------------ WORKFLOW ------------------------ #
 # Scraper
-dataset = oil_scraper(2023, 1)
+dataset = oil_scraper(2022, 10)
 
 # Upload S3
 upload_s3("gas-prices-project", dataset)
