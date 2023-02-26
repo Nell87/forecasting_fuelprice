@@ -89,7 +89,7 @@ def merge_datasets_S3():
 
 # ------------------------ WORKFLOW ------------------------ #
 # Scraper
-dataset = oil_scraper(2022, 10)
+dataset = oil_scraper(2022, 7)
 
 # Upload S3
 upload_s3("gas-prices-project", dataset)
