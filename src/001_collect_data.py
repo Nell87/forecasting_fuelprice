@@ -83,13 +83,16 @@ def merge_datasets_S3():
     
     concat_data = pd.concat([first_df, second_df]) 
     concat_data = concat_data.drop_duplicates(subset=None, keep="first", inplace=False)
+    concat_data = concat_data.sort_values('start_date')
 
     return concat_data
     
 
 # ------------------------ WORKFLOW ------------------------ #
 # Scraper
-dataset = oil_scraper(2022, 7)
+currentYear = datetime.now().year
+currentMonth = datetime.now().month
+dataset = oil_scraper(currentYear, currentMonth)
 
 # Upload S3
 upload_s3("gas-prices-project", dataset)
