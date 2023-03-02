@@ -91,7 +91,7 @@ def merge_datasets_S3():
 # Scraper
 currentYear = datetime.now().year
 currentMonth = datetime.now().month
-dataset = oil_scraper(currentYear, currentMonth)
+dataset = oil_scraper(currentYear, 2)
 
 # Upload S3
 upload_s3("gas-prices-project", dataset)
