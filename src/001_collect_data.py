@@ -97,7 +97,7 @@ currentYear = datetime.now().year
 currentMonth = datetime.now().month
 dataset = fuel_scraper(currentYear, currentMonth)
 
-if dataset.empty != False:
+if dataset.empty == False:
     # Upload S3
     upload_s3("gas-prices-project", dataset)
 
