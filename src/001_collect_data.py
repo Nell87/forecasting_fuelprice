@@ -11,7 +11,7 @@ import boto3
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Function to scrape weekly prices (Year has four digits and month one/two digits)
-def oil_scraper(year, month):
+def fuel_scraper(year, month):
 
     # Let's make a request to check the status
     response = requests.get('https://es.fuelo.net/calendar/week/' + str(year) +  "/" + str(month) + "?lang=en'"    )
@@ -95,7 +95,7 @@ def merge_datasets_S3():
 # Scraper
 currentYear = datetime.now().year
 currentMonth = datetime.now().month
-dataset = oil_scraper(currentYear, currentMonth)
+dataset = fuel_scraper(2022, 1)
 
 if dataset != "false":
     # Upload S3
