@@ -26,7 +26,7 @@ def fuel_scraper(year, month):
     calendar_week_elements = soup.find_all('div', class_='cell border')
 
     if calendar_week_elements == []: 
-        return "false"
+        return pd.DataFrame()
         
     else:
         # Prepare the dataframe
@@ -95,9 +95,9 @@ def merge_datasets_S3():
 # Scraper
 currentYear = datetime.now().year
 currentMonth = datetime.now().month
-dataset = fuel_scraper(2022, 1)
+dataset = fuel_scraper(currentYear, currentMonth)
 
-if dataset != "false":
+if dataset.empty != False:
     # Upload S3
     upload_s3("gas-prices-project", dataset)
 
