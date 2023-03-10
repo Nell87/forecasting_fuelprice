@@ -77,6 +77,7 @@ def merge_datasets_S3():
     
     concat_data = pd.concat([first_df, second_df]) 
     concat_data = concat_data.drop_duplicates(subset=None, keep="first", inplace=False)
+    concat_data[(concat_data['Diesel'] != 0).all(1)]  
 
     return concat_data
     
