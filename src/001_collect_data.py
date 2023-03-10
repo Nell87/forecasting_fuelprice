@@ -1,4 +1,5 @@
 #Load Libraries
+#Load Libraries
 import requests 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
@@ -14,54 +15,43 @@ import boto3
 def fuel_scraper(year, month):
 
     # Let's make a request to check the status
-    response = requests.get('https://es.fuelo.net/calendar/week/' + str(year) +  "/" + str(month) + "?lang=en'"    )
+    response = requests.get('https://es.fuelo.net/calendar/month/' + str(year) +  "/" + str(month))
     status_code = (response.status_code)    
 
     if status_code != 200:
-        return "The status code is not 200"
-
-    # Extract content
-    soup = bs(response.content,'html.parser')
-    calendar_week = soup.find_all('div', {'class': 'calendar week'})
-    calendar_week_elements = soup.find_all('div', class_='cell border')
-
-    if calendar_week_elements == []: 
+        #print( "The status code is not 200")
         return pd.DataFrame()
-        
+    
     else:
+        # Extract content
+        soup = bs(response.content,'html.parser')
+
         # Prepare the dataframe
-        df=pd.DataFrame(columns=["Week", "Unleaded 95", "Diesel", "LPG"])
-
-        # Scraper
-        column_names = list(df.columns.values.tolist())
-        columns = len(df.columns)
-        rows = int(len(calendar_week_elements)/columns)
-
-        i=0
-        for row in range(rows):
-            for column in range(columns):
-                if column_names[column] == "Week":
-                    df.at[row, column_names[column]] = re.sub(re.compile(r'^[^0-9]*'), '', calendar_week_elements[i].text).strip()
-                    i=i+1
-                else:
-                    df.at[row, column_names[column]] = re.sub(re.compile(r'^[^0-9]*'), '', calendar_week_elements[i].text)[:-5]
-                    i=i+1
-            
-        # Add end day
-        for row in range(rows):
-            df.at[row,'end_day'] = datetime.strptime(df.at[row, "Week"][-8:],'%d.%m.%y')
+        df=pd.DataFrame(columns=["Day", "Diesel"])
         
-        # Add start day
-        for row in range(rows):
-            df.at[row,'start_day'] = datetime.strptime(df.at[row, "Week"][-8:],'%d.%m.%y') -  timedelta(days=6)
+        # Scraper
+        i = 0
+        for td in soup.table.find_all('td'):
+            if (td.text.find("DSL")>-1):
+                    pattern = " " + ".*"
+                    day = re.sub(pattern, '', td.get_text(strip=False) )
+                    pattern  = ".*" + "DSL:" 
+                    price = re.sub(pattern, '', td.get_text(strip=False) )
+                    pattern = "€/l" + ".*"
+                    price = re.sub(pattern, '', price )
+                    df.at[i, "Day"] = day
+                    df.at[i, "Diesel"] = price
+                    i = i+1
+
+        # Add Date Column
+        df['Date'] = pd.to_datetime(dict(year=year, month=month, day=df.Day))
 
         # Remove week columns
-        df = df.iloc[: , 1:]
+        df = df.drop('Day', axis=1)
 
         # Reorganize columns
-        df = df[['start_day', 'end_day', 'Unleaded 95', 'Diesel', 'LPG']]
-
-
+        df = df[['Date', 'Diesel']]
+        
         return df
 
 def upload_s3(bucket, new_data):
@@ -92,10 +82,20 @@ def merge_datasets_S3():
     
 
 # ------------------------ WORKFLOW ------------------------ #
-# Scraper
+# Scraper current month
 currentYear = datetime.now().year
 currentMonth = datetime.now().month
 dataset = fuel_scraper(currentYear, currentMonth)
+
+# Scraper previous month
+if currentMonth > 1:
+    currentMonth = currentMonth -1
+else:
+    currentMonth = 12
+    currentYear = currentYear - 1
+
+dataset_prev = fuel_scraper(currentYear, currentMonth)
+dataset = pd.concat([dataset_prev, dataset]) 
 
 if dataset.empty == False:
     # Upload S3
@@ -112,4 +112,3 @@ if dataset.empty == False:
     s3.Object('gas-prices-project','data.csv').delete()
     s3.Object('gas-prices-project','data.csv').copy_from(CopySource='gas-prices-project/new_data.csv')
     s3.Object('gas-prices-project','new_data.csv').delete()
-
