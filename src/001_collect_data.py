@@ -46,6 +46,9 @@ def fuel_scraper(year, month):
         # Add Date Column
         df['Date'] = pd.to_datetime(dict(year=year, month=month, day=df.Day))
 
+        # Transform diesel column to float
+        df['Diesel'] = df['Diesel'] .str.replace('[A-Za-z]', '').str.replace(',', '.').astype(float)
+
         # Remove week columns
         df = df.drop('Day', axis=1)
 
@@ -80,6 +83,23 @@ def merge_datasets_S3():
     concat_data = concat_data[concat_data['Diesel'] >0]
 
     return concat_data
+
+# Scraper historical data
+def fuel_scraper_historical_data(first_year, last_year):
+# Prepare the dataframe
+    df=pd.DataFrame(columns=["Date", "Diesel"])
+    years= range(first_year,last_year+1)
+
+    for year in years:
+        for month in range(1,13):
+            temp_dataset = fuel_scraper(year, month)
+            df = pd.concat([df, temp_dataset]) 
+
+    df['Diesel'] = df['Diesel'] .str.replace('[A-Za-z]', '').str.replace(',', '.').astype(float)
+    df = df[df['Diesel'] != 0]   
+             
+    return df
+
     
 
 # ------------------------ WORKFLOW ------------------------ #
