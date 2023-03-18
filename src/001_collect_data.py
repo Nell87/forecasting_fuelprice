@@ -1,5 +1,4 @@
-#Load Libraries
-#Load Libraries
+# ------------------------ Libraries & Credentials ------------------------ #
 import requests 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
@@ -9,10 +8,14 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from io import StringIO
 import boto3
+import os
+
+os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Function to scrape weekly prices (Year has four digits and month one/two digits)
-def fuel_scraper(year, month):
+def fuel_scraper_daily(year, month):
 
     # Let's make a request to check the status
     response = requests.get('https://es.fuelo.net/calendar/month/' + str(year) +  "/" + str(month))
@@ -92,21 +95,19 @@ def fuel_scraper_historical_data(first_year, last_year):
 
     for year in years:
         for month in range(1,13):
-            temp_dataset = fuel_scraper(year, month)
+            temp_dataset = fuel_scraper_daily(year, month)
             df = pd.concat([df, temp_dataset]) 
 
-    df['Diesel'] = df['Diesel'] .str.replace('[A-Za-z]', '').str.replace(',', '.').astype(float)
+    df['Diesel'] = df['Diesel'] .str.replace('[A-Za-z]', '')
     df = df[df['Diesel'] != 0]   
              
-    return df
-
-    
+    return df    
 
 # ------------------------ WORKFLOW ------------------------ #
 # Scraper current month
 currentYear = datetime.now().year
 currentMonth = datetime.now().month
-dataset = fuel_scraper(currentYear, currentMonth)
+dataset = fuel_scraper_daily(currentYear, currentMonth)
 
 # Scraper previous month
 if currentMonth > 1:
@@ -115,7 +116,7 @@ else:
     currentMonth = 12
     currentYear = currentYear - 1
 
-dataset_prev = fuel_scraper(currentYear, currentMonth)
+dataset_prev = fuel_scraper_daily(currentYear, currentMonth)
 dataset = pd.concat([dataset_prev, dataset]) 
 
 if dataset.empty == False:
