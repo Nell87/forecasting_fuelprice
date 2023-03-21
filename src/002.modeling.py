@@ -9,6 +9,7 @@ import datetime
 from datetime import date
 import mlflow
 from IPython.display import display
+import itertools
 
 # Data manipulation
 # ==============================================================================
@@ -23,8 +24,10 @@ import statsmodels.tsa.arima as ARIMA
 import statsmodels.tsa.statespace.sarimax as SARIMAX
 from statsmodels.tools.eval_measures import rmse
 
-# Credentials AWS
+# Credentials
+# ==============================================================================
 os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Download Data
@@ -56,35 +59,63 @@ def split_train_test(data, days_test):
 
     return train,test
 
+# MLFlow: Modeling
+def train_sarimax_model_mlflow(train,test, run_name):
+
+    # Paramters
+    p = range(0,2)
+    d = range(0,2)
+    q = range(0,2)
+
+    P = range(0,2)
+    D = range(0,2)
+    Q = range(0,2)
+
+    parameters = itertools.product(p, d, q, P, D, Q)
+    parameters_list = list(parameters)
+    len(parameters_list)
+
+    # Model loop
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_experiment("SARIMAX")
+
+    for param in parameters_list:
+        with mlflow.start_run(run_name=run_name):
+
+            # Log 
+            mlflow.set_tag("model", "SARIMAX")
+            mlflow.log_param('order-p', param[0])
+            mlflow.log_param('order-d', param[1])
+            mlflow.log_param('order-q', param[2])
+            mlflow.log_param('order-P', param[3])
+            mlflow.log_param('order-D', param[4])
+            mlflow.log_param('order-Q', param[5])     
+            
+            # SARIMAX
+            try:
+                model_sarimax = SARIMAX.SARIMAX(train, order=(param[0], param[1],param[2]), seasonal_order=(param[3], param[4], param[5], 52))
+
+            except ValueError:
+                print('bad parameter combination:', param)    
+                            
+                continue
+            results = model_sarimax.fit()
+            start=len(train)
+            end=len(train)+len(test)-1
+            predictions = results.predict(start=start, end=end, dynamic=False)
+
+            # rmse metric
+            rmse_ = rmse(test, predictions)          
+            mlflow.log_metric("rmse", rmse_)  
+
+            # model
+            mlflow.statsmodels.log_model(results, artifact_path = "models")
+
 # ------------------------ WORKFLOW ------------------------ #
 # Download, preprocess and split data
-data = download_s3('gas-prices-project','data.csv')
-data = preprocess_fuelprice(data)
-train,test = split_train_test(data, 4)
-
-# Modeling
-# MLFlow 
-mlflow.set_tracking_uri("sqlite:///mlflow.db")
-mlflow.set_experiment("SARIMAX")
-
-with mlflow.start_run(run_name='arima_param'):
-
-    q = 1
-    d = 1
-    p = 1
-
-    mlflow.set_tag("developer", "sara")
-    mlflow.set_tag("model", "SARIMAX")
-    mlflow.log_param("q", q)
-    mlflow.log_param("d", q)
-    mlflow.log_param("p", q)
-
-    model_sarimax = SARIMAX.SARIMAX(train,order=(p,d,q),enforce_invertibility=False)
-    results = model_sarimax.fit()
-
-    start=len(train)
-    end=len(train)+len(test)-1
-
-    predictions = results.predict(start=start, end=end, dynamic=False)
-    rmse_ = rmse(test, predictions)
-    mlflow.log_metric("rmse", rmse_)    
+# This is a way to store code that should only run when your file is executed as a script.
+if __name__ == "__main__":
+    data = download_s3('gas-prices-project','data.csv')
+    data = preprocess_fuelprice(data)
+    train,test = split_train_test(data, 4)
+    train_sarimax_model_mlflow(train,test, "SARIMAX_param")
