@@ -8,9 +8,9 @@ The project is implemented on Ubuntu 22.04 using AWS.
 
 ### Gathering data
 Run `001_collect_data.py` from src folder to gather fuel price from the previous days.
-- The function `fuel_scraper_daily` will scrape the data
-- The function `upload_s3` will upload new data to the s3
-- The function `merge_datasets_s3` will merge old and new data in the s3
+- The `fuel_scraper_daily` function will scrape the data
+- The `upload_s3` function will upload new data to the s3
+- The `merge_datasets_s3` function will merge old and new data in the s3
 
 ### Modeling
 Run `002_modeling.py` from src folder to train SARIMA models with different parameters. The parameters and models registry will be saved in MLFlow
