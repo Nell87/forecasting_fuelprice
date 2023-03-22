@@ -27,4 +27,4 @@ This is a schema about the architecture used in this project
 - Best practices: 
 
 ## To do next
-The project has some improvements
+The project has some improvements to do 
