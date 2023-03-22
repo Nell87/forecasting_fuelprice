@@ -1,7 +1,7 @@
 # Fuel price project
 
 ## Objective
-The objective of the project is to predict fuel price in the next seven days. This project is an end to end machine learning project that involves all the steps from building to deploying and monitoring the model. 
+The objective of the project is to build an end to end machine learning project to predict fuel price. It involves all the steps from building to deploying and monitoring the model. 
 
 ## Project structure and architecture
 The project is implemented on Ubuntu 22.04 using AWS. 
