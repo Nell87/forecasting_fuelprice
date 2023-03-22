@@ -10,6 +10,8 @@ from datetime import date
 import mlflow
 from IPython.display import display
 import itertools
+from prefect import flow,task
+from prefect.task_runners import SequentialTaskRunner
 
 # Data manipulation
 # ==============================================================================
@@ -26,11 +28,12 @@ from statsmodels.tools.eval_measures import rmse
 
 # Credentials
 # ==============================================================================
-os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
-os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
+#os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+#os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Download Data
+@task
 def download_s3(bucket, data):
     client = boto3.client('s3')
     bucket_name = bucket
@@ -43,6 +46,7 @@ def download_s3(bucket, data):
     return data
 
 # Preprocess data
+@task
 def preprocess_fuelprice(data):
     data['Diesel'] = data['Diesel'] .astype(float)
     data['Date'] = pd.to_datetime(data['Date'],format="%Y-%m-%d")
@@ -53,6 +57,7 @@ def preprocess_fuelprice(data):
     return data
 
 # Split in train/test
+@task
 def split_train_test(data, days_test):
     train = data[:-days_test]
     test = data[-days_test:]
@@ -60,6 +65,7 @@ def split_train_test(data, days_test):
     return train,test
 
 # MLFlow: Modeling
+@task
 def train_sarimax_model_mlflow(train,test, run_name):
 
     # Paramters
@@ -76,9 +82,6 @@ def train_sarimax_model_mlflow(train,test, run_name):
     len(parameters_list)
 
     # Model loop
-    mlflow.set_tracking_uri("sqlite:///mlflow.db")
-    mlflow.set_experiment("SARIMAX")
-
     for param in parameters_list:
         with mlflow.start_run(run_name=run_name):
 
@@ -111,11 +114,17 @@ def train_sarimax_model_mlflow(train,test, run_name):
             # model
             mlflow.statsmodels.log_model(results, artifact_path = "models")
 
-# ------------------------ WORKFLOW ------------------------ #
-# Download, preprocess and split data
-# This is a way to store code that should only run when your file is executed as a script.
-if __name__ == "__main__":
+# Main function
+@flow(flow_runner=SequentialTaskRunner())
+def main():
+    # mlflow
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_experiment("SARIMAX")
+
     data = download_s3('gas-prices-project','data.csv')
     data = preprocess_fuelprice(data)
     train,test = split_train_test(data, 4)
     train_sarimax_model_mlflow(train,test, "SARIMAX_param")
+
+# ------------------------ WORKFLOW ------------------------ #
+main()
