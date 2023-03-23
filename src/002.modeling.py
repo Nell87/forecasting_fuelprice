@@ -51,10 +51,10 @@ def download_s3(bucket, data):
 @task
 def preprocess_fuelprice(data):
     data['Diesel'] = data['Diesel'] .astype(float)
-    #data['Date'] = pd.to_datetime(data['Date'],format="%Y-%m-%d")
-    #data.sort_values(by='Date', inplace = True) 
+    data['Date'] = pd.to_datetime(data['Date'],format="%Y-%m-%d")
+    data.sort_values(by='Date', inplace = True) 
     #data.drop_duplicates(data, inplace = True)
-    #data= data.groupby([ pd.Grouper(key='Date', freq = 'W-MON')])['Diesel'].mean()
+    data= data.groupby([ pd.Grouper(key='Date', freq = 'W-MON')])['Diesel'].mean()
 
     return data
 
@@ -126,8 +126,8 @@ def pipeline():
 
     data = download_s3('gas-prices-project','data.csv')
     data = preprocess_fuelprice(data)
-    #train,test = split_train_test(data, 4)
-    #train_sarimax_model_mlflow(train,test, "SARIMAX_param")
+    train,test = split_train_test(data, 4)
+    train_sarimax_model_mlflow(train,test, "SARIMAX_param")
 
 # ------------------------ WORKFLOW ------------------------ #
 """ deployment = Deployment.build_from_flow(
