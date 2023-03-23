@@ -12,6 +12,8 @@ from IPython.display import display
 import itertools
 from prefect import flow,task
 from prefect.task_runners import SequentialTaskRunner
+from prefect.deployments import Deployment
+from prefect.filesystems import S3
 
 # Data manipulation
 # ==============================================================================
@@ -28,8 +30,8 @@ from statsmodels.tools.eval_measures import rmse
 
 # Credentials
 # ==============================================================================
-#os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
-#os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
+os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Download Data
@@ -115,8 +117,9 @@ def train_sarimax_model_mlflow(train,test, run_name):
             mlflow.statsmodels.log_model(results, artifact_path = "models")
 
 # Main function
-@flow(flow_runner=SequentialTaskRunner())
-def main():
+#@flow(flow_runner=SequentialTaskRunner())
+@flow
+def pipeline():
     # mlflow
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
     mlflow.set_experiment("SARIMAX")
@@ -127,4 +130,13 @@ def main():
     train_sarimax_model_mlflow(train,test, "SARIMAX_param")
 
 # ------------------------ WORKFLOW ------------------------ #
-main()
+""" deployment = Deployment.build_from_flow(
+    flow= pipeline,
+    name="example-deployment"
+)
+
+if __name__ == "__main__":
+    deployment.apply() """
+
+if __name__ == "__main__":
+    pipeline()
