@@ -21,7 +21,7 @@ Run `002_modeling.py` from src folder to train SARIMA models with different para
 
 ### Schema 
 This is a schema about the architecture used in this project
-![Schema](https://files.fm/thumb_show.php?i=b492w4rzy)
+![Schema](https://files.fm/thumb_show.php?i=mcz9bazws)
 
 ## Tools and technologies used
 - Cloud: AWS
