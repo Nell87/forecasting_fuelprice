@@ -13,11 +13,13 @@ Run `001_collect_data.py` from src folder to gather fuel price from the previous
 - The `merge_datasets_s3` function will merge old and new data in the s3
 
 ### Modeling / Experiment tracking
-Run `002_modeling.py` from src folder to train SARIMA models with different parameters. The parameters and models registry will be saved in MLFlow
+Run `002_modeling.py` from src folder to train SARIMA models with different parameters. The parameters and models registry will be created using MLFlow. I'll save the tracking in an Amazon Relational Database Service (RDS) and keep the best model inside a s3 bucket
 
 ### Model deployment
+Run '003_deployment.py' to put into production the best model resulting from the experiments. 
 
 ### Monitoring
+Evidently.ai is used to monitor the pipeline. 
 
 ### Schema 
 This is a schema about the architecture used in this project
