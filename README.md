@@ -1,7 +1,7 @@
 # Fuel price project
 
 ## Objective
-The objective of the project is to build an end to end machine learning project to predict fuel price. It involves all the steps from building to deploying and monitoring the model. 
+The objective of the project is to build an end to end machine learning project to predict fuel price. It involves all the steps from collecting data to training, deploying and monitoring a model. 
 
 ## Project structure and architecture
 The project is implemented on Ubuntu 22.04 using AWS. 
@@ -12,11 +12,18 @@ Run `001_collect_data.py` from src folder to gather fuel price from the previous
 - The `upload_s3` function will upload new data to the s3
 - The `merge_datasets_s3` function will merge old and new data in the s3
 
-### Modeling
-Run `002_modeling.py` from src folder to train SARIMA models with different parameters. The parameters and models registry will be saved in MLFlow
+### Modeling / Experiment tracking
+Run `002_modeling.py` from src folder to train SARIMA models with different parameters. The parameters and models registry will be created using MLFlow. I'll save the tracking in an Amazon Relational Database Service (RDS) and keep the best model inside a s3 bucket
+
+### Model deployment
+Run '003_deployment.py' to put into production the best model resulting from the experiments. 
+
+### Monitoring
+Evidently.ai is used to monitor the pipeline. 
 
 ### Schema 
 This is a schema about the architecture used in this project
+![Schema](https://files.fm/thumb_show.php?i=mcz9bazws)
 
 ## Tools and technologies used
 - Cloud: AWS
