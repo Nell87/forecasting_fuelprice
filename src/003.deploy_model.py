@@ -4,6 +4,9 @@
 import mlflow
 from mlflow.tracking import MlflowClient
 from mlflow.entities import ViewType
+from mlflow.deployments import get_deploy_client
+from mlflow.sagemaker import SageMakerDeploymentClient
+import mlflow.sagemaker as mfs
 import os
 import boto3
 from io import StringIO
@@ -74,6 +77,18 @@ def load_model_production(bucket):
     model = mlflow.sklearn.load_model(logged_model)
     
     return model
+
+# Deploy model
+@task
+def deploy_model():
+    config=dict(region_name="eu-west-1")
+    location = 's3://gas-prices-project/production'
+    mlflow.models.build_docker(model_uri=location, name='mlflow-pyfunc')
+    #client = get_deploy_client("sagemaker")
+    #client.create_deployment(
+    #    name = "test", 
+    #    model_uri = location,
+    #    config = config)
     
 # Apply best model
 @task
@@ -108,8 +123,9 @@ def pipeline():
     data = download_s3('gas-prices-project','data.csv')
     data = preprocess_fuelprice(data)
     model = load_model_production('gas-prices-project')
-    predictions = apply_model(model, data)
-    upload_s3('gas-prices-project', predictions)
+    deploy_model()
+    #predictions = apply_model(model, data)
+    #upload_s3('gas-prices-project', predictions)
 
 # ------------------------ WORKFLOW ------------------------ #
 if __name__ == "__main__":

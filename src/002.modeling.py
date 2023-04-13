@@ -29,6 +29,7 @@ from hyperopt.pyll import scope
 import statsmodels.tsa.arima as ARIMA
 import statsmodels.tsa.statespace.sarimax as SARIMAX
 from statsmodels.tools.eval_measures import rmse
+from sklearn.metrics import mean_absolute_percentage_error 
 
 # Credentials and configuration
 # ==============================================================================
@@ -73,8 +74,8 @@ def split_train_test(data, days_test):
 def train_sarimax_model_mlflow(train,test, run_name):
 
     # Paramters
-    p = range(0,1)
-    d = range(0,2)
+    p = range(0,2)
+    d = range(0,1)
     q = range(0,1)
 
     P = range(0,1)
@@ -111,9 +112,14 @@ def train_sarimax_model_mlflow(train,test, run_name):
             end=len(train)+len(test)-1
             predictions = results.predict(start=start, end=end, dynamic=False)
 
-            # rmse metric
-            rmse_ = rmse(test, predictions)          
+            # metrics
+            rmse_ = rmse(test, predictions) 
+            mape_ = mean_absolute_percentage_error(test, predictions)   
+            ACI_ = results.aic
+                    
             mlflow.log_metric("rmse", rmse_)  
+            mlflow.log_metric("mape", mape_) 
+            mlflow.log_metric("ACI", ACI_) 
 
             # model
             #mlflow.statsmodels.log_model(results, artifact_path = "model")
