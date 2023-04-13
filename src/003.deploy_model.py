@@ -38,8 +38,8 @@ from statsmodels.tools.eval_measures import rmse
 
 # Credentials and configuration
 # ==============================================================================
-os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
-os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
+#os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+#os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Download Data
