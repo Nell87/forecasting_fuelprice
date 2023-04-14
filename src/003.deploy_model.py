@@ -38,33 +38,10 @@ from statsmodels.tools.eval_measures import rmse
 
 # Credentials and configuration
 # ==============================================================================
-#os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
-#os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
+os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
-# Download Data
-@task
-def download_s3(bucket, data):
-    client = boto3.client('s3')
-    bucket_name = bucket
-    object_key = data
-    csv_obj = client.get_object(Bucket=bucket_name, Key=object_key)
-    body = csv_obj['Body']
-    csv_string = body.read().decode('utf-8')
-
-    data = pd.read_csv(StringIO(csv_string))
-    return data
-
-# Preprocess data
-@task
-def preprocess_fuelprice(data):
-    data['Diesel'] = data['Diesel'] .astype(float)
-    data['Date'] = pd.to_datetime(data['Date'],format="%Y-%m-%d")
-    data.sort_values(by='Date', inplace = True) 
-    #data.drop_duplicates(data, inplace = True)
-    data= data.groupby([ pd.Grouper(key='Date', freq = 'W-MON')])['Diesel'].mean()
-
-    return data
 
 # Load model in production (mlflow)
 @task
@@ -81,35 +58,17 @@ def load_model_production(bucket):
 # Deploy model
 @task
 def deploy_model():
-    config=dict(region_name="eu-west-1")
+    config=dict(region_name="eu-west-1", execution_role_arn = "arn:aws:iam::331069391452:role/EC2-S3-Access",
+    image_url = "331069391452.dkr.ecr.eu-west-1.amazonaws.com/mlflow-pyfunc:2.1.1")
     location = 's3://gas-prices-project/production'
     mlflow.models.build_docker(model_uri=location, name='mlflow-pyfunc')
-    #client = get_deploy_client("sagemaker")
-    #client.create_deployment(
-    #    name = "test", 
-    #    model_uri = location,
-    #    config = config)
+   
+    client = get_deploy_client("sagemaker")
+    client.create_deployment(
+        name = "test", 
+        model_uri = location,
+        config = config)
     
-# Apply best model
-@task
-def apply_model(model, data):
-    pred =  model.predict(start=len(data), end=len(data)+4)
-    return pred
-
-# Save predictions into the s3
-@task
-def upload_s3(bucket, new_data):  
-    timestamp = 1625309472.357246 
-    date_time = datetime.fromtimestamp(timestamp)
-    str_date_time = date_time.strftime("%d-%m-%Y, %H:%M:%S")
-
-    s3 = boto3.client('s3')
-    csv_buffer = StringIO()
-    new_data.to_csv(csv_buffer, index=False)
-
-    s3_resource = boto3.resource('s3')
-    s3_resource.Object(bucket, f'predictions/predictions_{str_date_time}.csv').put(Body=csv_buffer.getvalue())
-
 # Main function
 @flow
 def pipeline():
@@ -120,12 +79,8 @@ def pipeline():
     client = MlflowClient(tracking_uri=MLFLOW_TRACKING_URI)
     mlflow.set_experiment(exp_name)
 
-    data = download_s3('gas-prices-project','data.csv')
-    data = preprocess_fuelprice(data)
     model = load_model_production('gas-prices-project')
     deploy_model()
-    #predictions = apply_model(model, data)
-    #upload_s3('gas-prices-project', predictions)
 
 # ------------------------ WORKFLOW ------------------------ #
 if __name__ == "__main__":
