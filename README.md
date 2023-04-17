@@ -1,4 +1,7 @@
 # Fuel price project
+## Tests
+![example workflow](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/cml.yaml/badge.svg)
+
 
 ## Objective
 The objective of the project is to build an end to end machine learning project to predict fuel price. It involves all the steps from collecting data to training, deploying and monitoring a model. 
