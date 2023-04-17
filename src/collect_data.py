@@ -10,8 +10,8 @@ from io import StringIO
 import boto3
 import os
 
-os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
-os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
+#os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+#os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Function to scrape weekly prices (Year has four digits and month one/two digits)
