@@ -30,7 +30,7 @@ jobs:
           uses: aws-actions/configure-aws-credentials@v1
           with:
             aws-region: eu-west-1
-            role-to-assume: ${{secrets.ROLE}}
+            role-to-assume: arn:aws:iam::${{ secrets.ROLE }}:role/EC2-S3-Access
             role-session-name: OIDCSession
         
         - name: Install Python dependencies
