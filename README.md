@@ -1,5 +1,4 @@
 # Fuel price project
-## Tests
 ![example workflow](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/cml.yaml/badge.svg)
 
 
