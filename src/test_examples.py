@@ -1,3 +1,4 @@
+import os
 import pytest
 from collect_data import fuel_scraper_daily
  
