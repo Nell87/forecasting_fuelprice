@@ -7,10 +7,12 @@ from datetime import datetime
 from io import StringIO
 import boto3
 import os
+from prefect import flow,task
 
 # ------------------------ FUNCTIONS ------------------------ #
 
 # Check if the code is run locally to set up the environment configuration 
+@task
 def where_am_i():
     hostname=os.popen('hostname').read()
     desktop = "DESKTOP"
@@ -20,6 +22,7 @@ def where_am_i():
         os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # Function to scrape weekly prices (Year has four digits and month one/two digits)
+@task
 def fuel_scraper_daily(year, month):
 
     # Let's make a request to check the status
@@ -65,6 +68,8 @@ def fuel_scraper_daily(year, month):
         
         return df
 
+@task
+# Upload to S3
 def upload_s3(bucket, new_data):
     s3 = boto3.client('s3')
     csv_buffer = StringIO()
@@ -73,6 +78,8 @@ def upload_s3(bucket, new_data):
     s3_resource = boto3.resource('s3')
     s3_resource.Object(bucket, 'new_data.csv').put(Body=csv_buffer.getvalue())
 
+@task
+# Merge new data with original data
 def merge_datasets_S3():
     bucket = 'gas-prices-project'
     filename_1 = 'data.csv'
@@ -93,6 +100,7 @@ def merge_datasets_S3():
     return concat_data
 
 # Scraper historical data
+@task
 def fuel_scraper_historical_data(first_year, last_year):
 # Prepare the dataframe
     df=pd.DataFrame(columns=["Date", "Diesel"])
@@ -108,37 +116,43 @@ def fuel_scraper_historical_data(first_year, last_year):
              
     return df    
 
+# Main function
+@flow
+def pipeline():
+    # Configuration
+    where_am_i()
+
+    # Scraper current month
+    currentYear = datetime.now().year
+    currentMonth = datetime.now().month
+    dataset = fuel_scraper_daily(currentYear, currentMonth)
+
+    # Scraper previous month
+    if currentMonth > 1:
+        currentMonth = currentMonth -1
+    else:
+        currentMonth = 12
+        currentYear = currentYear - 1
+
+    dataset_prev = fuel_scraper_daily(currentYear, currentMonth)
+    dataset = pd.concat([dataset_prev, dataset]) 
+
+    if dataset.empty == False:
+        # Upload S3
+        upload_s3("gas-prices-project", dataset)
+
+        # Merge
+        concat_data = merge_datasets_S3()
+
+        # Upload S3
+        upload_s3("gas-prices-project", concat_data)
+
+        # Rename
+        s3 = boto3.resource('s3')
+        s3.Object('gas-prices-project','data.csv').delete()
+        s3.Object('gas-prices-project','data.csv').copy_from(CopySource='gas-prices-project/new_data.csv')
+        s3.Object('gas-prices-project','new_data.csv').delete()
+
 # ------------------------ WORKFLOW ------------------------ #
-# Configuration
-where_am_i()
-
-# Scraper current month
-currentYear = datetime.now().year
-currentMonth = datetime.now().month
-dataset = fuel_scraper_daily(currentYear, currentMonth)
-
-# Scraper previous month
-if currentMonth > 1:
-    currentMonth = currentMonth -1
-else:
-    currentMonth = 12
-    currentYear = currentYear - 1
-
-dataset_prev = fuel_scraper_daily(currentYear, currentMonth)
-dataset = pd.concat([dataset_prev, dataset]) 
-
-if dataset.empty == False:
-    # Upload S3
-    upload_s3("gas-prices-project", dataset)
-
-    # Merge
-    concat_data = merge_datasets_S3()
-
-    # Upload S3
-    upload_s3("gas-prices-project", concat_data)
-
-    # Rename
-    s3 = boto3.resource('s3')
-    s3.Object('gas-prices-project','data.csv').delete()
-    s3.Object('gas-prices-project','data.csv').copy_from(CopySource='gas-prices-project/new_data.csv')
-    s3.Object('gas-prices-project','new_data.csv').delete()
+if __name__ == "__main__":
+    pipeline()
