@@ -2,23 +2,18 @@
 import requests 
 from bs4 import BeautifulSoup as bs
 import pandas as pd
+import numpy as np
 import re
-from datetime import datetime
+from decimal import Decimal
+from datetime import datetime, timedelta
 from io import StringIO
 import boto3
 import os
 
+#os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+#os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
+
 # ------------------------ FUNCTIONS ------------------------ #
-
-# Check if the code is run locally to set up the environment configuration 
-def where_am_i():
-    hostname=os.popen('hostname').read()
-    desktop = "DESKTOP"
-
-    if desktop in hostname:
-        os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
-        os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
-
 # Function to scrape weekly prices (Year has four digits and month one/two digits)
 def fuel_scraper_daily(year, month):
 
@@ -109,9 +104,6 @@ def fuel_scraper_historical_data(first_year, last_year):
     return df    
 
 # ------------------------ WORKFLOW ------------------------ #
-# Configuration
-where_am_i()
-
 # Scraper current month
 currentYear = datetime.now().year
 currentMonth = datetime.now().month
