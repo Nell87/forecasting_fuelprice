@@ -1,0 +1,9 @@
+FROM python
+
+ADD requirements.txt
+
+RUN pip install -r requirements.txt
+
+ADD collect_data.py
+
+CMD [ "python", "./collect_data.py" ]
