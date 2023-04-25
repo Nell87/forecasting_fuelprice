@@ -1,5 +1,4 @@
 # Fuel price project
-## Tests
 ![example workflow](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/cml.yaml/badge.svg)
 
 
@@ -26,7 +25,7 @@ Evidently.ai is used to monitor the pipeline.
 
 ### Schema 
 This is a schema about the architecture used in this project
-![Schema](https://files.fm/thumb_show.php?i=mcz9bazws)
+![Schema](https://files.fm/thumb_show.php?i=bmynmww54)
 
 ## Tools and technologies used
 - Cloud: AWS
