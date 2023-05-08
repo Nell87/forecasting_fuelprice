@@ -1,14 +1,27 @@
 name: mlops
 
-# Controls when the workflow will run
 on: 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 jobs:
-  turn-on-ec2:  
-    # The type of runner that the job will run on
+  gathering-data:  
     runs-on: ubuntu-22.04
     steps:
-      - name: "Turnning on EC2"
-        run: echo "hi!"
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: eu-west-1
+        role-to-assume: arn:aws:iam::${{ secrets.ROLE }}:role/EC2-S3-Access
+        role-session-name: OIDCSession
+
+    - name: "Turning on EC2"
+      id: start-ec2-runner
+      uses: Nell87/forecasting_fuelprice@main
+      with:
+        mode: start
+        github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+        ec2-image-id: ami-0333305f9719618c7
+        ec2-instance-type: t2.large
+        subnet-id: subnet-0f4b8515c2a8d5669
+        security-group-id: sg-0180618b8408fc93b
