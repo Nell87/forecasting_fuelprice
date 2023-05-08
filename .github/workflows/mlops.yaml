@@ -3,13 +3,16 @@ name: mlops
 on: 
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
+permissions:
+      id-token: write   # This is required for requesting the JWT
+      contents: read    # This is required for actions/checkout
+
 jobs:
   gathering-data:  
     runs-on: ubuntu-22.04
     steps:
 
     - name: Check out repository   # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-
       uses: actions/checkout@v3
 
     - name: Configure AWS Credentials
