@@ -1,5 +1,5 @@
 # ------------------------ Libraries & Credentials ------------------------ #
-import requests 
+import requests
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 import re
@@ -11,14 +11,14 @@ from prefect import flow,task
 
 # ------------------------ FUNCTIONS ------------------------ #
 
-# Check if the code is run locally to set up the environment configuration 
+# Check if the code is run locally to set up the environment configuration
 @task
 def where_am_i():
     hostname=os.popen('hostname').read()
     desktop = "DESKTOP"
 
     if desktop in hostname:
-        os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
+        os.environ["AWS_PROFILE"] = "mlops" # fill in with your AWS profile.
         os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # Function to scrape weekly prices (Year has four digits and month one/two digits)
@@ -27,7 +27,7 @@ def fuel_scraper_daily(year, month):
 
     # Let's make a request to check the status
     response = requests.get('https://es.fuelo.net/calendar/month/' + str(year) +  "/" + str(month))
-    status_code = (response.status_code)    
+    status_code = (response.status_code)
 
     if status_code != 200:
         #print( "The status code is not 200")
@@ -43,16 +43,16 @@ def fuel_scraper_daily(year, month):
         # Scraper
         i = 0
         for td in soup.table.find_all('td'):
-            if (td.text.find("DSL")>-1):
-                    pattern = " " + ".*"
-                    day = re.sub(pattern, '', td.get_text(strip=False) )
-                    pattern  = ".*" + "DSL:" 
-                    price = re.sub(pattern, '', td.get_text(strip=False) )
-                    pattern = "€/l" + ".*"
-                    price = re.sub(pattern, '', price )
-                    df.at[i, "Day"] = day
-                    df.at[i, "Diesel"] = price
-                    i = i+1
+            if td.text.find("DSL")>-1:
+                pattern = " " + ".*"
+                day = re.sub(pattern, '', td.get_text(strip=False) )
+                pattern  = ".*" + "DSL:" 
+                price = re.sub(pattern, '', td.get_text(strip=False) )
+                pattern = "€/l" + ".*"
+                price = re.sub(pattern, '', price )
+                df.at[i, "Day"] = day
+                df.at[i, "Diesel"] = price
+                i = i+1
 
         # Add Date Column
         df['Date'] = pd.to_datetime(dict(year=year, month=month, day=df.Day))
@@ -109,12 +109,12 @@ def fuel_scraper_historical_data(first_year, last_year):
     for year in years:
         for month in range(1,13):
             temp_dataset = fuel_scraper_daily(year, month)
-            df = pd.concat([df, temp_dataset]) 
+            df = pd.concat([df, temp_dataset])
 
     df['Diesel'] = df['Diesel'] .str.replace('[A-Za-z]', '')
-    df = df[df['Diesel'] != 0]   
+    df = df[df['Diesel'] != 0]
              
-    return df    
+    return df
 
 # Main function
 @flow
@@ -135,7 +135,7 @@ def pipeline():
         currentYear = currentYear - 1
 
     dataset_prev = fuel_scraper_daily(currentYear, currentMonth)
-    dataset = pd.concat([dataset_prev, dataset]) 
+    dataset = pd.concat([dataset_prev, dataset])
 
     if dataset.empty == False:
         # Upload S3

@@ -4,8 +4,8 @@ on:
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 permissions:
-      id-token: write   # This is required for requesting the JWT
-      contents: read    # This is required for actions/checkout
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
 
 jobs:
   gathering-data:  
@@ -15,8 +15,7 @@ jobs:
     - name: Check out repository   # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       uses: actions/checkout@v3
       with:
-        repository: Nell87/forecasting_fuelprice
-        path: forecasting_fuelprice
+        fetch-depth: 0
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -25,13 +24,5 @@ jobs:
         role-to-assume: arn:aws:iam::${{ secrets.ROLE }}:role/EC2-S3-Access
         role-session-name: OIDCSession
 
-    - name: "Turning on EC2"
-      id: start-ec2-runner
-      uses: Nell87/forecasting_fuelprice@main
-      with:
-        mode: start
-        github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-        ec2-image-id: ami-0333305f9719618c7
-        ec2-instance-type: t2.large
-        subnet-id: subnet-0f4b8515c2a8d5669
-        security-group-id: sg-0180618b8408fc93b
+    - name: Install Python dependencies
+      run: python -m pip install pylint
