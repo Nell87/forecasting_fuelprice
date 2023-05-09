@@ -1,5 +1,6 @@
 import os
 import pytest
+import prefect
 from collect_data import fuel_scraper_daily
  
 def test_data_numbercolumns():
