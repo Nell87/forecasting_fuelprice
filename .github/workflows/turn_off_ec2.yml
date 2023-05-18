@@ -1,0 +1,29 @@
+name: turn_off_ec2
+
+# Only trigger, when the build workflow succeeded
+on: 
+  workflow_dispatch: 
+  
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  turn_off_ec2:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::${{ secrets.ROLE }}:role/EC2-S3-Access
+          role-session-name: OIDCSession
+        
+      - name: Stop AWS EC2
+        run: |
+          aws ec2 stop-instances --instance-ids i-0e92c1b8d77a8f307
+  

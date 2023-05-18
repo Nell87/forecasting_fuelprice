@@ -1,9 +1,10 @@
-name: mlops
+name: mlflow
 
-# Only trigger, when the build workflow succeeded
-
-on: 
-  workflow_dispatch: 
+on:
+  workflow_run:
+    workflows: ["turn_on_ec2"]
+    types:
+      - completed
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -14,11 +15,6 @@ jobs:
     runs-on: self-hosted
     
     steps:
-
-    - name: Check out repository   # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -31,9 +27,10 @@ jobs:
       uses: actions/setup-python@v2
 
     - name: Install Python dependencies
-      run: python -m pip install bs4 pandas boto3 prefect psycopg2-binary  mlflow
+      run: python -m pip install psycopg2-binary  mlflow 
       
-    - name: start _mlflow_
+    - name: start MLFLOW
       run: mlflow server -h 0.0.0.0 -p 5000 --backend-store-uri postgresql://${{secrets.MLFLOW_DB_USERNAME}}:${{secrets.MLFLOW_DB_PASSWORD}}@${{secrets.MLFLOW_DB_ENDPOINT}}/mlflow_db --default-artifact-root s3://gas-prices-project/mlflow
+
 
         
