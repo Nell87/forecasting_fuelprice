@@ -1,7 +1,9 @@
 # Fuel price project
+[![turn_on_ec2](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/turn_on_ec2.yml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/turn_on_ec2.yml)
+[![linter-pylint](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/linter.yaml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/linter.yaml)
 [![mlops](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/mlops.yaml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/mlops.yaml)
 [![testing](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/test.yaml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/test.yaml)
-[![linter-pylint](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/linter.yaml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/linter.yaml)
+[![turn_off_ec2](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/turn_off_ec2.yml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/turn_off_ec2.yml)
 
 ## Objective
 The objective of the project is to build an end to end machine learning project to predict fuel price. It involves all the steps from collecting data to training, deploying and monitoring a model. 

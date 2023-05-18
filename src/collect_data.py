@@ -1,12 +1,12 @@
 # ------------------------ Libraries & Credentials ------------------------ #
-import requests
-from bs4 import BeautifulSoup as bs
-import pandas as pd
 import re
 from datetime import datetime
 from io import StringIO
-import boto3
 import os
+import requests
+from bs4 import BeautifulSoup as bs
+import pandas as pd
+import boto3
 from prefect import flow,task
 
 # ------------------------ FUNCTIONS ------------------------ #
@@ -27,7 +27,7 @@ def fuel_scraper_daily(year, month):
 
     # Let's make a request to check the status
     response = requests.get('https://es.fuelo.net/calendar/month/' + str(year) +  "/" + str(month))
-    status_code = (response.status_code)
+    status_code = response.status_code
 
     if status_code != 200:
         #print( "The status code is not 200")
@@ -150,7 +150,8 @@ def pipeline():
         # Rename
         s3 = boto3.resource('s3')
         s3.Object('gas-prices-project','data.csv').delete()
-        s3.Object('gas-prices-project','data.csv').copy_from(CopySource='gas-prices-project/new_data.csv')
+        s3.Object('gas-prices-project','data.csv').copy_from(
+                  CopySource='gas-prices-project/new_data.csv')
         s3.Object('gas-prices-project','new_data.csv').delete()
 
 # ------------------------ WORKFLOW ------------------------ #
