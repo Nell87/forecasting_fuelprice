@@ -29,7 +29,7 @@ from hyperopt.pyll import scope
 import statsmodels.tsa.arima as ARIMA
 import statsmodels.tsa.statespace.sarimax as SARIMAX
 from statsmodels.tools.eval_measures import rmse
-from sklearn.metrics import mean_absolute_percentage_error 
+from sklearn.metrics import mean_absolute_percentage_error
 
 # Credentials and configuration
 # ==============================================================================
