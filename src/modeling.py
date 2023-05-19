@@ -33,8 +33,15 @@ from sklearn.metrics import mean_absolute_percentage_error
 
 # Credentials and configuration
 # ==============================================================================
-os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
-os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
+# Check if the code is run locally to set up the environment configuration
+@task
+def where_am_i():
+    hostname=os.popen('hostname').read()
+    desktop = "DESKTOP"
+
+    if desktop in hostname:
+        os.environ["AWS_PROFILE"] = "mlops" # fill in with your AWS profile.
+        os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Download Data
