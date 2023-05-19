@@ -63,7 +63,7 @@ def preprocess_fuelprice(data):
     data['Date'] = pd.to_datetime(data['Date'],format="%Y-%m-%d")
     data.sort_values(by='Date', inplace = True) 
     #data.drop_duplicates(data, inplace = True)
-    data= data.groupby([ pd.Grouper(key='Date', freq = 'W-MON')])['Diesel'].mean()
+    data= data.groupby([ pd.Grouper(key='Date', freq = 'W-MON', label='left',closed='left')])['Diesel'].mean()
 
     return data
 
