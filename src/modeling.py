@@ -82,8 +82,8 @@ def train_sarimax_model_mlflow(train,test, run_name):
 
     # Paramters
     p = range(0,2)
-    d = range(0,1)
-    q = range(0,1)
+    d = range(0,2)
+    q = range(0,2)
 
     P = range(0,1)
     D = range(0,1)
