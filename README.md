@@ -423,8 +423,22 @@ def upload_s3(bucket, new_data):
  ```
 </details>
 
-### Monitoring (WIP)
-Evidently.ai will be used to monitor the pipeline and detect prediction errors or data drift.
+### Monitoring 
+Evidently.ai is used in this project to monitor the pipeline and detecting data drift using the Kolmogorov-Smirnov (K-S) test. The K-S test is a nonparametric statistical test employed to determine whether two sets of data are derived from the same distribution.  The null hypothesis in this test assumes that the distributions are identical. If this hypothesis is rejected, it suggests that there is a drift in the model. More information about data drift parameters using Evidently [here](https://docs.evidentlyai.com/user-guide/customization/options-for-statistical-tests)
+
+The following functions have been used:
+- The `download_s3` function is used to download the data from the S3 bucket
+- The `preprocess_fuelprice` function is used to group the daily data into weekly data
+- The `check_data_drift` function is used to detect  if there are changes in the distribution of the input data over time.
+
+<details>
+<summary>View code</summary>
+
+```python
+    
+    
+ ```
+</details>
 
 ## Architecture 
 This is a diagram illustrating the architecture used in this project.
@@ -447,10 +461,10 @@ This is a diagram illustrating the architecture used in this project.
     - Pylint: checks for errors in Python code and encourages good coding patterns 
 
 ## To do list
-- [ ] CI/CD workflow with GitHub Actions (automatically train, retrain and deploy new models)
+- [X] Monitor data drift using Evidently
+- [ ]  [ ] CI/CD workflow with GitHub Actions (automatically train, retrain and deploy new models)
 - [ ] Containerize project with Docker
 - [ ] Include more tests
-- [ ] Monitor data drift using Evidently
 - [ ] Flask API
 
 ## Credits
