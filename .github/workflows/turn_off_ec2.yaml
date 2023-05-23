@@ -1,8 +1,11 @@
 name: turn_off_ec2
 
-# Only trigger, when the build workflow succeeded
-on: 
+on:
   workflow_dispatch: 
+  workflow_run:
+    workflows: [collect_predict]
+    types:
+      - completed
   
 permissions:
   id-token: write

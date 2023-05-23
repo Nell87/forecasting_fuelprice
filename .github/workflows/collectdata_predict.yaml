@@ -1,9 +1,11 @@
-name: mlops
+name: collect_predict
 
-# Only trigger, when the build workflow succeeded
-
-on: 
+on:
   workflow_dispatch: 
+  workflow_run:
+    workflows: [test]
+    types:
+      - completed
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -12,10 +14,11 @@ permissions:
 jobs:
   gathering-data:  
     runs-on: self-hosted
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     steps:
 
-    - name: Check out repository   # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Check out repository
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -31,9 +34,10 @@ jobs:
       uses: actions/setup-python@v2
 
     - name: Install Python dependencies
-      run: python -m pip install bs4 pandas boto3 prefect psycopg2-binary  mlflow
-      
-    - name: start _mlflow_
-      run: mlflow server -h 0.0.0.0 -p 5000 --backend-store-uri postgresql://${{secrets.MLFLOW_DB_USERNAME}}:${{secrets.MLFLOW_DB_PASSWORD}}@${{secrets.MLFLOW_DB_ENDPOINT}}/mlflow_db --default-artifact-root s3://gas-prices-project/mlflow
+      run: python -m pip install bs4 pandas boto3 statsmodels
 
-        
+    - name: collect data
+      run: python src/collect_data.py
+
+    - name: predicting
+      run: python src/predicting.py

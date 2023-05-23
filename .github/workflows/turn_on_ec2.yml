@@ -2,7 +2,9 @@ name: turn_on_ec2
 
 on: 
   workflow_dispatch: 
-  
+  schedule:
+    - cron: '00 07 * * MON'
+
 permissions:
   id-token: write
   contents: read
@@ -10,9 +12,9 @@ permissions:
 jobs:
 
   turn_on_ec2:
-
     runs-on: ubuntu-latest
-
+    outputs:
+      label: ${{ steps.start-ec2-runner.outputs.label }}
     steps:
     
       - name: Configure AWS Credentials

@@ -13,14 +13,11 @@ from io import StringIO
 import datetime
 from datetime import date
 import mlflow
-from IPython.display import display
 import itertools
 from prefect import flow,task
 from prefect.task_runners import SequentialTaskRunner
 from prefect.deployments import Deployment
 from prefect.filesystems import S3
-import tempfile
-import coremltools as ct
 from datetime import datetime
 import json
 
@@ -31,16 +28,18 @@ import pandas as pd
 
 # Modeling and Forecasting
 # ==============================================================================
-from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
-from hyperopt.pyll import scope
-import statsmodels.tsa.arima as ARIMA
-import statsmodels.tsa.statespace.sarimax as SARIMAX
-from statsmodels.tools.eval_measures import rmse
 
 # Credentials and configuration
 # ==============================================================================
-os.environ["AWS_PROFILE"] = ("mlops") # fill in with your AWS profile. 
-os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
+# Check if the code is run locally to set up the environment configuration
+@task
+def where_am_i():
+    hostname=os.popen('hostname').read()
+    desktop = "DESKTOP"
+
+    if desktop in hostname:
+        os.environ["AWS_PROFILE"] = "mlops" # fill in with your AWS profile.
+        os.environ['AWS_DEFAULT_REGION'] = "eu-west-1"
 
 # ------------------------ FUNCTIONS ------------------------ #
 # Download Data

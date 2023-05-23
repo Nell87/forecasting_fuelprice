@@ -3,7 +3,7 @@ name: linter-pylint
 # Only trigger, when the build workflow succeeded
 on:
   workflow_run:
-    workflows: ["turn_on_ec2"]
+    workflows: [turn_on_ec2]
     types:
       - completed
 
@@ -13,13 +13,18 @@ permissions:
 
 jobs:
   check_collect_data:  
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     steps:
 
     - name: Check out repository   # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+        
+    - name: Set up Python
+      uses: actions/setup-python@v2
 
     - name: Install Python dependencies
       run: python -m pip install pylint

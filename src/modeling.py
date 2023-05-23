@@ -78,7 +78,7 @@ def split_train_test(data, days_test):
 
 # MLFlow: Modeling SARIMA
 @task
-def train_sarimax_model_mlflow(train,test, run_name):
+def train_arima_mlflow(train,test, run_name):
 
     # Paramters
     p = range(0,2)
@@ -144,7 +144,7 @@ def pipeline():
     data = download_s3('gas-prices-project','data.csv')
     data = preprocess_fuelprice(data)
     train,test = split_train_test(data, 4)
-    train_sarimax_model_mlflow(train,test, "SARIMA_param")
+    train_arima_mlflow(train,test, "SARIMA_param")
 
 # ------------------------ WORKFLOW ------------------------ #
 if __name__ == "__main__":
