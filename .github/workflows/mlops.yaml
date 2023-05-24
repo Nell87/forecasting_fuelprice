@@ -47,7 +47,8 @@ jobs:
           export data_drift=$(python3 src/monitor_datadrift.py)
           echo $data_drift
 
-  predict:    
+  predict: 
+    needs: collectdata-checkdatadrift   
     runs-on: self-hosted
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
