@@ -43,14 +43,17 @@ jobs:
       run: python3 src/collect_data.py
       
     - name: check data drift
+      id: set
       run: |
           export data_drift=$(python3 src/monitor_datadrift.py)
           echo $data_drift
+    outputs: 
+      data_drift: ${{ steps.set.outputs.data_drift }}
 
   predict: 
-    needs: collectdata-checkdatadrift   
+    needs: collectdata-checkdatadrift 
     runs-on: self-hosted
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} & needs.collectdata-checkdatadrift.data_drift > 0.05
     
     steps:
 
