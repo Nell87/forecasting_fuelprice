@@ -1,0 +1,51 @@
+name: collect_predict
+
+on:
+  workflow_dispatch: 
+  workflow_run:
+    workflows: [test]
+    types:
+      - completed
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+jobs:
+  mlops:  
+    runs-on: self-hosted
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+
+    - name: Check out repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: eu-west-1
+        role-to-assume: arn:aws:iam::${{ secrets.ROLE }}:role/EC2-S3-Access
+        role-session-name: OIDCSession
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+
+    - name: Install Python dependencies
+      run: pip install bs4 pandas boto3 statsmodels 
+
+    - name: evidently
+      run: pip install evidently==0.2.8
+
+    - name: collect data
+      run: python3 src/collect_data.py
+      
+    - name: check data drift
+      run: |
+          export data_drift=$(python3 src/monitor_datadrift.py)
+          echo $data_drift
+
+    - name: predicting
+      run: python3 src/predicting.py
