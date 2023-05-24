@@ -3,7 +3,7 @@ name: turn_off_ec2
 on:
   workflow_dispatch: 
   workflow_run:
-    workflows: [collect_predict]
+    workflows: [mlops]
     types:
       - completed
   
