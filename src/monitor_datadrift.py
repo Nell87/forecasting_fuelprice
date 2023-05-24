@@ -79,17 +79,17 @@ def check_data_drift(data):
     data_drift_report.run(reference_data=datadiff[:reference_data], current_data=datadiff[reference_data:])
     data_drift_report = data_drift_report.as_dict()
 
-    drift = data_drift_report['metrics'][0]['result']['dataset_drift']
-    drift_score = data_drift_report['metrics'][0]['result']['drift_by_columns']['Diesel']['drift_score']
+    #drift = data_drift_report['metrics'][0]['result']['dataset_drift']
+    #drift_score = data_drift_report['metrics'][0]['result']['drift_by_columns']['Diesel']['drift_score']
 
-    return(drift,drift_score)
-
+    #return(drift_score)
+    return(data_drift_report)
 # Main function
 @flow
 def pipeline():
     data = download_s3('gas-prices-project','data.csv')
     data = preprocess_fuelprice(data)
-    drift,drift_score = check_data_drift(data)
+    drift_score = check_data_drift(data)
 
     return(drift_score)
 

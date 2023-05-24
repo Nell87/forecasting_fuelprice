@@ -32,6 +32,4 @@ jobs:
       run: python -m pip install bs4 pandas boto3 evidently
 
     - name: monitor
-      run: |
-        output = python src/monitor_datadrift.py
-        echo "::set-output name=changelog::$output"
+      run: python src/monitor_datadrift.py
