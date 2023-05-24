@@ -26,12 +26,19 @@ jobs:
         role-session-name: OIDCSession
     
     - name: Set up Python
-      uses: actions/setup-python@v2
-
+      uses: actions/setup-python@v4
+      
+    - name: update pyopenssl
+      run: pip install pyopenssl --upgrade
+      
     - name: Install Python dependencies
-      run: python -m pip install bs4 pandas boto3 evidently
+      run:  pip install bs4 boto3 evidently
+      
+    - name: evidently
+      run:  pip install evidently==0.2.8
 
     - name: monitor
       run: |
-        output = python src/monitor_datadrift.py
-        echo "::set-output name=changelog::$output"
+        export data_drift=$(python3 src/monitor_datadrift.py)
+        echo $data_drift
+
