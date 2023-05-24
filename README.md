@@ -2,7 +2,7 @@
 [![turn_on_ec2](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/turn_on_ec2.yml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/turn_on_ec2.yml)
 [![linter-pylint](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/linter.yaml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/linter.yaml)
 [![testing](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/test.yaml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/test.yaml)
-[![collect_predict](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/collectdata_predict.yaml/badge.svg?branch=main)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/collectdata_predict.yaml)
+[![mlops](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/mlops.yaml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/mlops.yaml)
 [![turn_off_ec2](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/turn_off_ec2.yaml/badge.svg)](https://github.com/Nell87/forecasting_fuelprice/actions/workflows/turn_off_ec2.yaml)
 
 ## Table of Contents
