@@ -13,6 +13,7 @@
     - [Model deployment](#model-deployment)
     - [Predictions](#predictions)
     - [Monitoring](#monitoring)
+    - [Retrain-Modeling](#Retrain-Modeling)
 - [Architecture](#architecture)
 - [GitHub Actions](#github-actions)
 - [Tools and technologies used](#tools-and-technologies-used)
@@ -444,6 +445,8 @@ The following functions have been used:
     
  ```
 </details>
+
+### Retrain-Modeling
 
 ## Architecture 
 This is a diagram illustrating the architecture used in this project.
