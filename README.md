@@ -9,7 +9,7 @@
 - [Objective](#objective)
 - [Project structure](#project-structure)
     - [Gathering data](#gathering-data)
-    - [Modeling / Experiment tracking](Modeling-/-Experiment-tracking)
+    - [Modeling-Experiment tracking](Modeling-Experiment-tracking)
     - [Model deployment](Model-deployment)
     - [Predictions](Predictions)
     - [Monitoring](Monitoring)
@@ -115,7 +115,7 @@ def merge_datasets_S3():
 
 </details>
 
-### Modeling / Experiment tracking
+### Modeling-Experiment tracking
 So far, only ARIMA models with multiple parameters have been trained for this project (check next steps in the "To-do list"). MLFlow was used for experiment tracking and model registry. I have saved the tracking information in an Amazon Relational Database Service (RDS) and stored the best model inside an s3 bucket
 
 The following functions have been used:
