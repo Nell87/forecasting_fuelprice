@@ -8,6 +8,11 @@
 ## Table of Contents
 - [Objective](#objective)
 - [Project structure](#project-structure)
+    - [Gathering data](#gathering-data)
+    - [Modeling / Experiment tracking](Modeling-/-Experiment-tracking)
+    - [Model deployment](Model-deployment)
+    - [Predictions](Predictions)
+    - [Monitoring](Monitoring)
 - [Architecture](#architecture)
 - [GitHub Actions](#github-actions)
 - [Tools and technologies used](#tools-and-technologies-used)
