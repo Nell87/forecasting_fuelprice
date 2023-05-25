@@ -465,7 +465,6 @@ This is a diagram illustrating the architecture used in this project.
 - [ ]  [ ] CI/CD workflow with GitHub Actions (automatically train, retrain and deploy new models)
 - [ ] Containerize project with Docker
 - [ ] Include more tests
-- [ ] Flask API
 
 ## Credits
 
