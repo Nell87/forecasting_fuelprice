@@ -442,7 +442,7 @@ The following functions have been used:
 
 ## Architecture 
 This is a diagram illustrating the architecture used in this project.
-![Schema](https://files.fm/thumb.php?i=acqpzdfhs)
+<a href="https://files.fm/u/y33vfwxjy#/view/architecture.PNG"><img src="https://files.fm/thumb_show.php?i=hte93metc"></a>
 
 ## GitHub Actions
 - Continuous Integration (WIP). With every push, the Docker images are built and tested.
